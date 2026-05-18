@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FC26 Training">
+<meta name="theme-color" content="#0a0c10">
+<link rel="manifest" id="manifest-link">
+<title>FC26 Training Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0c10;--s1:#12151c;--s2:#1a1e28;--s3:#222838;
+  --brd:#2a3040;--brd2:#3a4a6a;
+  --t1:#e8ecf4;--t2:#8892a8;--t3:#5a6478;
+  --acc:#00e5a0;--acc2:#00c488;--accd:rgba(0,229,160,.12);
+  --red:#ff4d6a;--redd:rgba(255,77,106,.12);
+  --yel:#ffc857;--yeld:rgba(255,200,87,.12);
+  --blu:#4d9eff;--blud:rgba(77,158,255,.12);
+  --ora:#ff8c42;
+  --r:10px;--rs:6px;
+}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t1);line-height:1.6;min-height:100vh;min-height:100dvh;padding-bottom:env(safe-area-inset-bottom,0)}
+button{font-family:inherit}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--s1)}
+::-webkit-scrollbar-thumb{background:var(--s3);border-radius:2px}
+
+/* ========== LOGIN SCREEN ========== */
+#login-screen{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px}
+#login-screen.hidden{display:none}
+.login-box{width:100%;max-width:380px;text-align:center}
+.login-logo{font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:4px;margin-bottom:4px}
+.login-logo span{color:var(--acc)}
+.login-sub{color:var(--t3);font-size:13px;margin-bottom:32px}
+.login-input{width:100%;padding:14px 16px;background:var(--s1);border:1px solid var(--brd);border-radius:var(--rs);color:var(--t1);font-size:15px;font-family:inherit;margin-bottom:12px;outline:none;transition:border-color .2s}
+.login-input:focus{border-color:var(--acc)}
+.login-input::placeholder{color:var(--t3)}
+.login-btn{width:100%;padding:14px;background:var(--acc);color:var(--bg);border:none;border-radius:var(--rs);font-size:15px;font-weight:700;cursor:pointer;transition:opacity .2s;margin-top:4px}
+.login-btn:hover{opacity:.9}
+.login-btn:active{transform:scale(.98)}
+.login-toggle{color:var(--t3);font-size:13px;margin-top:16px;cursor:pointer}
+.login-toggle span{color:var(--acc);font-weight:600}
+.login-err{color:var(--red);font-size:13px;margin-top:8px;min-height:20px}
+.login-users{margin-top:20px;border-top:1px solid var(--brd);padding-top:16px}
+.login-users-title{color:var(--t3);font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.login-user-btn{display:block;width:100%;padding:10px 16px;background:var(--s1);border:1px solid var(--brd);border-radius:var(--rs);color:var(--t2);font-size:14px;cursor:pointer;margin-bottom:6px;text-align:left;font-family:inherit;transition:all .2s}
+.login-user-btn:hover{border-color:var(--acc);color:var(--acc)}
+.login-user-btn .u-date{float:right;font-size:11px;color:var(--t3)}
+
+/* ========== NAV ========== */
+.nav{position:sticky;top:0;z-index:100;background:rgba(10,12,16,.94);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--brd)}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:4px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;padding:0 12px}
+.nav-inner::-webkit-scrollbar{display:none}
+.nb{padding:11px 12px;font-size:12px;font-weight:600;color:var(--t3);background:none;border:none;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:all .2s}
+.nb:hover{color:var(--t2)}
+.nb.active{color:var(--acc);border-bottom-color:var(--acc)}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--acc);padding-right:12px;border-right:1px solid var(--brd);margin-right:4px;white-space:nowrap;cursor:pointer}
+.nav-user{margin-left:auto;padding:6px 12px;font-size:12px;color:var(--t3);cursor:pointer;white-space:nowrap;border:1px solid var(--brd);border-radius:var(--rs);transition:all .2s}
+.nav-user:hover{border-color:var(--red);color:var(--red)}
+
+/* ========== LAYOUT ========== */
+.hero{padding:48px 24px 32px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-40%;left:50%;transform:translateX(-50%);width:500px;height:500px;background:radial-gradient(circle,rgba(0,229,160,.07) 0%,transparent 70%);pointer-events:none}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,7vw,64px);letter-spacing:3px;line-height:1;position:relative}
+.hero h1 span{color:var(--acc)}
+.hero-sub{color:var(--t2);font-size:14px;margin-top:10px;position:relative}
+.hero-stats{display:flex;justify-content:center;gap:28px;margin-top:24px;position:relative}
+.hero-stat-val{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--acc)}
+.hero-stat-label{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:1px}
+.main{max-width:1100px;margin:0 auto;padding:0 16px 80px}
+.tab{display:none;animation:fu .3s ease}.tab.active{display:block}
+@keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ========== COMMON ========== */
+.sec{margin-bottom:28px}
+.sec-h{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--brd)}
+.sec-icon{width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sec-icon.g{background:var(--accd)}.sec-icon.r{background:var(--redd)}.sec-icon.b{background:var(--blud)}.sec-icon.y{background:var(--yeld)}
+.sec-t{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px}
+.card{background:var(--s1);border:1px solid var(--brd);border-radius:var(--r);padding:16px;margin-bottom:12px;transition:border-color .2s}
+.card:hover{border-color:var(--brd2)}
+.card-t{font-weight:700;font-size:14px;margin-bottom:4px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.card-b{color:var(--t2);font-size:13px}
+.card-b p{margin-bottom:6px}.card-b p:last-child{margin-bottom:0}
+.bi{display:inline-flex;padding:1px 7px;background:var(--s3);border:1px solid var(--brd);border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--yel);font-weight:600;white-space:nowrap}
+.badge{display:inline-block;padding:1px 7px;border-radius:3px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.bc{background:var(--redd);color:var(--red)}.bh{background:var(--yeld);color:var(--yel)}.bm{background:var(--blud);color:var(--blu)}
+
+/* CHECKLIST */
+.cl{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--s1);border:1px solid var(--brd);border-radius:var(--rs);margin-bottom:6px;cursor:pointer;transition:all .2s;user-select:none;-webkit-user-select:none}
+.cl:hover{border-color:var(--brd2)}.cl.done{opacity:.5;border-color:var(--acc);background:var(--accd)}
+.cl.done .cb{background:var(--acc);border-color:var(--acc);color:var(--bg)}
+.cb{width:20px;height:20px;border-radius:5px;border:2px solid var(--brd);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;transition:all .2s;margin-top:1px}
+.cl-t{font-weight:600;font-size:13px}.cl-d{color:var(--t2);font-size:12px;margin-top:1px}
+
+/* RULE */
+.rl{background:var(--s1);border-left:3px solid var(--red);border-radius:0 var(--rs) var(--rs) 0;padding:14px 16px;margin-bottom:8px}
+.rl.do{border-left-color:var(--acc)}.rl.w{border-left-color:var(--yel)}
+.rl-t{font-weight:700;font-size:13px;margin-bottom:3px}.rl-b{color:var(--t2);font-size:12px}
+
+/* TABLE */
+.ct{width:100%;border-collapse:separate;border-spacing:0;border-radius:var(--r);overflow:hidden}
+.ct th{background:var(--s2);padding:8px 12px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--t3);border-bottom:1px solid var(--brd)}
+.ct td{padding:8px 12px;font-size:12px;border-bottom:1px solid var(--brd);background:var(--s1)}
+.ct tr:last-child td{border-bottom:none}
+.ct .cm{font-family:'JetBrains Mono',monospace;color:var(--yel);font-weight:600;white-space:nowrap}
+
+/* DRILL */
+.dr{background:var(--s1);border:1px solid var(--brd);border-radius:var(--r);padding:16px;margin-bottom:12px;position:relative;overflow:hidden}
+.dr::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;border-radius:2px 0 0 2px}
+.dr.dg::before{background:var(--acc)}.dr.do::before{background:var(--ora)}.dr.db::before{background:var(--blu)}
+.dr-n{font-weight:700;font-size:14px;margin-bottom:3px;padding-left:8px}
+.dr-d{color:var(--t2);font-size:12px;padding-left:8px;margin-bottom:10px}
+.dr-t{display:flex;align-items:center;gap:10px;padding-left:8px}
+.tm{font-family:'JetBrains Mono',monospace;font-size:24px;color:var(--acc);letter-spacing:2px}
+.tb{padding:7px 14px;border-radius:var(--rs);border:1px solid var(--acc);background:var(--accd);color:var(--acc);font-weight:600;font-size:12px;cursor:pointer;transition:all .2s}
+.tb:hover{background:var(--acc);color:var(--bg)}
+.tb.stop{border-color:var(--red);background:var(--redd);color:var(--red)}
+.tb.stop:hover{background:var(--red);color:#fff}
+
+/* QUIZ */
+.quiz-card{background:var(--s1);border:1px solid var(--brd);border-radius:var(--r);padding:20px;margin-bottom:16px}
+.quiz-q{font-weight:700;font-size:15px;margin-bottom:14px;line-height:1.5}
+.quiz-q .q-num{color:var(--acc);font-family:'Bebas Neue',sans-serif;font-size:18px;margin-right:6px}
+.quiz-opts{display:flex;flex-direction:column;gap:6px}
+.quiz-opt{padding:12px 14px;background:var(--s2);border:1px solid var(--brd);border-radius:var(--rs);cursor:pointer;font-size:13px;transition:all .2s;user-select:none;-webkit-user-select:none}
+.quiz-opt:hover{border-color:var(--brd2);background:var(--s3)}
+.quiz-opt.correct{border-color:var(--acc);background:var(--accd);color:var(--acc)}
+.quiz-opt.wrong{border-color:var(--red);background:var(--redd);color:var(--red)}
+.quiz-opt.disabled{pointer-events:none;opacity:.6}
+.quiz-exp{margin-top:10px;padding:10px 14px;background:var(--s2);border-radius:var(--rs);font-size:12px;color:var(--t2);display:none;border-left:3px solid var(--acc)}
+.quiz-score{text-align:center;padding:24px;background:var(--s1);border:1px solid var(--brd);border-radius:var(--r)}
+.quiz-score-val{font-family:'Bebas Neue',sans-serif;font-size:56px;color:var(--acc)}
+.quiz-score-label{color:var(--t2);font-size:14px}
+.quiz-restart{margin-top:14px;padding:10px 24px;background:var(--accd);border:1px solid var(--acc);border-radius:var(--rs);color:var(--acc);font-weight:600;cursor:pointer;font-size:13px;font-family:inherit}
+.quiz-cat-btn{padding:10px 16px;background:var(--s1);border:1px solid var(--brd);border-radius:var(--rs);color:var(--t2);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;margin-bottom:6px;display:block;width:100%;text-align:left;font-family:inherit}
+.quiz-cat-btn:hover{border-color:var(--acc);color:var(--acc)}
+.quiz-cat-btn.active{border-color:var(--acc);background:var(--accd);color:var(--acc)}
+
+/* MISTAKE LOG */
+.lg{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:14px}
+.lc{background:var(--s1);border:1px solid var(--brd);border-radius:var(--rs);padding:12px;text-align:center;cursor:pointer;transition:all .2s;user-select:none;-webkit-user-select:none}
+.lc:hover,.lc:active{border-color:var(--red);background:var(--redd)}
+.lv{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--red)}
+.ll{font-size:11px;color:var(--t2);margin-top:2px}
+
+/* PROGRESS */
+.pw{margin:20px 0}
+.ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.pl{font-size:12px;font-weight:600;color:var(--t2)}
+.pp{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--acc)}
+.pb{height:5px;background:var(--s2);border-radius:3px;overflow:hidden}
+.pf{height:100%;background:linear-gradient(90deg,var(--acc),var(--blu));border-radius:3px;transition:width .5s ease}
+
+.rst{display:block;margin:32px auto 0;padding:8px 20px;border-radius:var(--rs);border:1px solid var(--brd);background:var(--s1);color:var(--t3);font-size:12px;cursor:pointer;font-family:inherit;transition:all .2s}
+.rst:hover{border-color:var(--red);color:var(--red);background:var(--redd)}
+
+@media(max-width:640px){
+  .hero{padding:32px 16px 20px}
+  .hero-stats{gap:16px}
+  .lg{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<div id="login-screen">
+<div class="login-box">
+  <div class="login-logo">FC26 <span>TRAINING</span></div>
+  <div class="login-sub">Antrenament complet bazat pe cursul FC School</div>
+  <input class="login-input" id="l-user" type="text" placeholder="Username" autocomplete="off" autofocus>
+  <input class="login-input" id="l-pass" type="password" placeholder="Parolă">
+  <button class="login-btn" id="l-btn" onclick="doAuth()">Creează cont</button>
+  <div class="login-err" id="l-err"></div>
+  <div class="login-toggle" id="l-toggle" onclick="toggleAuthMode()">Ai deja cont? <span>Loghează-te</span></div>
+  <div class="login-users" id="l-users"></div>
+</div>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="app" style="display:none">
+<nav class="nav">
+<div class="nav-inner">
+  <span class="nav-logo" onclick="showTab('home')">⚽ FC26</span>
+  <button class="nb active" data-tab="home">Acasă</button>
+  <button class="nb" data-tab="defense">Apărare</button>
+  <button class="nb" data-tab="attack">Atac</button>
+  <button class="nb" data-tab="tactics">Tactici</button>
+  <button class="nb" data-tab="drills">Drill-uri</button>
+  <button class="nb" data-tab="quiz">Quiz</button>
+  <button class="nb" data-tab="mistakes">Greșeli</button>
+  <button class="nb" data-tab="replay">Replay</button>
+  <button class="nav-user" id="nav-user" onclick="logout()">⏏ Logout</button>
+</div>
+</nav>
+
+<div class="hero">
+  <h1>FC26 <span>TRAINING HUB</span></h1>
+  <p class="hero-sub">Curs complet: Apărare + Atac + Tactici + Quiz-uri</p>
+  <div class="hero-stats">
+    <div><div class="hero-stat-val" id="s-done">0</div><div class="hero-stat-label">Completate</div></div>
+    <div><div class="hero-stat-val" id="s-total">0</div><div class="hero-stat-label">Obiective</div></div>
+    <div><div class="hero-stat-val" id="s-pct">0%</div><div class="hero-stat-label">Progres</div></div>
+    <div><div class="hero-stat-val" id="s-quiz">—</div><div class="hero-stat-label">Scor Quiz</div></div>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ========== HOME ========== -->
+<div class="tab active" id="t-home">
+  <div class="sec">
+    <div class="sec-h"><div class="sec-icon g">📋</div><h2 class="sec-t">Checklist Complet</h2></div>
+    <p style="color:var(--t2);font-size:13px;margin-bottom:16px">Bifează obiectivele pe măsură ce le stăpânești. Progresul se salvează pe contul tău.</p>
+    <div class="pw"><div class="ph"><span class="pl">Progres total</span><span class="pp" id="p-pct">0%</span></div><div class="pb"><div class="pf" id="p-fill" style="width:0%"></div></div></div>
+    <div id="cl-container"></div>
+  </div>
+</div>
+
+<!-- ========== DEFENSE ========== -->
+<div class="tab" id="t-defense">
+  <div class="sec">
+    <div class="sec-h"><div class="sec-icon g">🧱</div><h2 class="sec-t">Filozofia „Zidul"</h2></div>
+    <div class="rl do"><div class="rl-t">✅ Ești un ZID, nu un vânător</div><div class="rl-b">Trasează linia imaginară adversar → poartă. Stai pe ea. Auto-tackle face restul.</div></div>
+    <div class="rl do"><div class="rl-t">✅ CDM apără primul, CB = ultima resursă</div><div class="rl-b">CDM 1 → CDM 2 → linia de 4. Nu ieși cu CB decât dacă nu ai altă opțiune.</div></div>
+    <div class="rl do"><div class="rl-t">✅ Forțează adversarul spre margini</div><div class="rl-b">Central = toate opțiunile. Margine = un con. Running jockey împinge spre exterior.</div></div>
+    <div class="rl do"><div class="rl-t">✅ Schimbă jucătorul la animația de lovire</div><div class="rl-b">Nu când mingea ajunge — când adversarul lovește mingea. Right stick, nu L1.</div></div>
+    <div class="rl do"><div class="rl-t">✅ Aleargă unde VA FI mingea</div><div class="rl-b">Tracking back: anticipare > reacție. Through ball → aleargă ÎNAINTE de markerul galben.</div></div>
+    <div class="rl w"><div class="rl-t">⚠️ Distanța corectă</div><div class="rl-b">Imaginează-ți un jucător între voi — aceea e distanța ideală.</div></div>
+  </div>
+  <div class="sec">
+    <div class="sec-h"><div class="sec-icon r">🚫</div><h2 class="sec-t">Greșeli Fatale</h2></div>
+    <div class="rl"><div class="rl-t">❌ Teammate contain cu CB</div><div class="rl-b">NICIODATĂ R1/O cu CB. Doar CAM/CDM secundar.</div></div>
+    <div class="rl"><div class="rl-t">❌ Ieșire agresivă cu CB</div><div class="rl-b">Adversarul va trece mingea. CB = rămâne pe linie.</div></div>
+    <div class="rl"><div class="rl-t">❌ Pierderea mingii cu CB</div><div class="rl-b">Nicio fentă cu ultimul rând. Pasă sigură sau la portar.</div></div>
+    <div class="rl"><div class="rl-t">❌ Ruperea liniei de 4</div><div class="rl-b">Dacă o rupi, nu mai recuperezi. Nu scoate fullback-ul.</div></div>
+    <div class="rl"><div class="rl-t">❌ Jocul rapid din frustrare</div><div class="rl-b">Pauza 10 min după înfrângere. Muzică cu BPM scăzut.</div></div>
+  </div>
+  <div class="sec">
+    <div class="sec-h"><div class="sec-icon y">🎮</div><h2 class="sec-t">Butoane Defensive</h2></div>
+    <table class="ct"><thead><tr><th>Buton</th><th>Acțiune</th><th>Când</th></tr></thead><tbody>
+      <tr><td class="cm">L2</td><td>Regular Jockey</td><td>Blocaj unghi, față în față</td></tr>
+      <tr><td class="cm">L2+R2</td><td>Running Jockey</td><td>Principala metodă — urmărire + împingere exterior</td></tr>
+      <tr><td class="cm">R2</td><td>Sprint normal</td><td>Recuperare punct A→B, NU apărare activă</td></tr>
+      <tr><td class="cm">X / □</td><td>Tackle</td><td>NUMAI cu mingea direct în față</td></tr>
+      <tr><td class="cm">L1</td><td>Switch rapid</td><td>Urgență / box. Adesea selectează greșit</td></tr>
+      <tr><td class="cm">R-Stick</td><td>Switch manual</td><td>METODA PRINCIPALĂ. Ball Relative, sens. 5</td></tr>
+      <tr><td class="cm">R1 / O</td><td>Teammate Contain</td><td>DOAR CAM/CDM. NICIODATĂ CB</td></tr>
+      <tr><td class="cm">All sticks</td><td>Super Cancel</td><td>Anulează animația forțată</td></tr>
+    </tbody></table>
+  </div>
+  <div class="sec">
+    <div class="sec-h"><div class="sec-icon b">🔗</div><h2 class="sec-t">Situații Defensive</h2></div>
+    <div class="card"><div class="card-t">Adversarul driblează spre tine</div><div class="card-b"><span class="bi">L2+R2</span> running jockey → stick stâng spre exterior. NU apăsa X decât cu mingea la picior.</div></div>
+    <div class="card"><div class="card-t">CDM depășit, adversar în fața careului</div><div class="card-b"><span class="bi">R-Stick</span> → CB → <span class="bi">L2+R2</span> dar RĂMÂI pe linie. Al doilea CDM se interpune.</div></div>
+    <div class="card"><div class="card-t">Atac pe aripă, vine spre careu</div><div class="card-b">CDM manual → <span class="bi">R1</span> teammate contain → CAM presează → tu blochezi cutback-ul.</div></div>
+    <div class="card"><div class="card-t">Through ball în spatele apărării</div><div class="card-b"><span class="bi">R2</span> sprint pur → aleargă ÎNAINTE de markerul galben, nu spre minge.</div></div>
+    <div class="card"><div class="card-t">Sub presiune, fără pasă sigură</div><div class="card-b">Dă la <strong>portar</strong> — al 5-lea jucător. 4+1 vs 4.</div></div>
+    <div class="card"><div class="card-t">Gap filling — gaură în mijloc</div><div class="card-b"><span class="bi">R-Stick</span> → selectezi winger/mijlocaș → îl muți manual în spațiul gol ÎNAINTE de pasă.</div></div>
+  </div>
+</div>
+
+<!-- ========== ATTACK ========== -->
+<div class="tab" id="t-attack">
+  <div class="sec">
+    <div class="sec-h"><div class="sec-icon y">⚡</div><h2 class="sec-t">Dribbling</h2></div>
+    <div class="card"><div class="card-t">🎨 Metoda „Pensulă" <span class="badge bh">Recomandată</span></div><div class="card-b"><p>Stick stâng rotit ca o pensulă pe tablou, fără să ridici degetul. Mișcare continuă, netedă. Produce animații fluide + close dribbling.</p></div></div>
+    <div class="card"><div class="card-t">⚡ Metoda „Flick rapid"</div><div class="card-b"><p>Zvâcniri rapide ale stick-ului. Mișcări agile, mai multe atingeri ale mingii = agile dribbling.</p></div></div>
+    <div class="card"><div class="card-t">🔀 Stutter (stânga-dreapta rapid)</div><div class="card-b"><p>Creează ezitare care înșeală adversarul uman. Eficient pentru a crea unghiul de pasă.</p></div></div>
+    <div class="card"><div class="card-t">🛡 Shielding <span class="bi">L2</span></div><div class="card-b"><p>L2 lângă adversar — corpul protejează mingea automat. Îmbunătățit în FC 26.</p></div></div>
+    <div class="rl do"><div class="rl-t">✅ Nu alerga în linie dreaptă</div><div class="rl-b">Ești previzibil. Folosește mișcarea în pensulă.</div></div>
+    <div class="rl"><div class="rl-t">❌ Nu te angaja spre adversarul nemișcat</div><div class="rl-b">Trebuie să-l faci pe el să se angajeze primul.</div></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><div class="sec-icon r">🎯</div><h2 class="sec-t">Finalizare</h2></div>
+    <div class="card"><div class="card-t">⭐ Low Driven Double Tap <span class="badge bc">Meta</span></div><div class="card-b"><p>Butonul de șut apăsat de <strong>două ori rapid</strong> (tap-tap), la <strong>putere medie</strong>. CEA MAI EFICIENTĂ metodă din FC 26.</p><p>Pattern: față spre portar → o atingere la 45° → double tap la putere medie.</p></div></div>
+    <table class="ct"><thead><tr><th>Tip Șut</th><th>Execuție</th></tr></thead><tbody>
+      <tr><td>Șut normal</td><td class="cm">Shoot ×1</td></tr>
+      <tr><td>Low Driven</td><td class="cm">Shoot ×2 (tap-tap)</td></tr>
+      <tr><td>Finesse</td><td class="cm">R1 (ținut) + Shoot</td></tr>
+      <tr><td>Traveller</td><td class="cm">L2 + Shoot</td></tr>
+      <tr><td>Power Shot</td><td class="cm">L1 + R1 + Shoot + L-Stick</td></tr>
+      <tr><td>Chip Shot</td><td class="cm">Shoot (putere mică) — portar ieșit</td></tr>
+      <tr><td>Voleu</td><td class="cm">Shoot ×2 — minge la talie</td></tr>
+    </tbody></table>
+    <div class="rl do" style="margin-top:12px"><div class="rl-t">✅ Unghi de 45° față de poartă înainte de șut</div><div class="rl-b">Nu trage frontal. O atingere la 45°, apoi șut transversal (cross goal sau near post).</div></div>
+    <div class="rl"><div class="rl-t">❌ Finesse din afara careului</div><div class="rl-b">Funcționează NUMAI înăuntrul careului, cu unghi.</div></div>
+    <div class="rl"><div class="rl-t">❌ Putere maximă + double tap</div><div class="rl-b">Animația durează prea mult. Putere medie.</div></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><div class="sec-icon b">🕹</div><h2 class="sec-t">Skill Moves</h2></div>
+    <p style="color:var(--t2);font-size:13px;margin-bottom:12px"><strong>Toate cu stick-ul DREPT.</strong> Relative la direcția jucătorului (direcția de mers = „ora 12").</p>
+    <table class="ct"><thead><tr><th>Mișcare</th><th>Stele</th><th>Execuție</th></tr></thead><tbody>
+      <tr><td>Step Over</td><td>1★</td><td class="cm">R-Stick: 12→3</td></tr>
+      <tr><td>La Croqueta</td><td>4★</td><td class="cm">L1 + R-Stick stânga/dreapta</td></tr>
+      <tr><td>Elastico</td><td>5★</td><td class="cm">R-Stick: U răsturnat (3→9)</td></tr>
+      <tr><td>Reverse Elastico</td><td>5★</td><td class="cm">R-Stick: U invers</td></tr>
+      <tr><td>Sombrero Flick</td><td>5★</td><td class="cm">R-Stick: sus-sus-jos</td></tr>
+    </tbody></table>
+    <div class="rl" style="margin-top:12px"><div class="rl-t">❌ Nu executa față de ecran sau poartă</div><div class="rl-b">ÎNTOTDEAUNA față de JUCĂTOR. Dacă schimbă direcția, recalculezi.</div></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><div class="sec-icon g">🥧</div><h2 class="sec-t">Prima Atingere — „Pie Chart"</h2></div>
+    <div class="card"><div class="card-b">
+      <p>Când primești mingea, ia prima atingere <strong>opusul adversarului</strong> (zona verde).</p>
+      <p>🟢 <strong>Verde (sigur):</strong> Ora 9-12-2 (față de tine, departe de adversar)</p>
+      <p>🟡 <strong>Galben (moderat):</strong> Lateral față de adversar</p>
+      <p>🔴 <strong>Roșu (pierdere garantată):</strong> Direct spre adversar (ora 3-6)</p>
+      <p><strong>Tehnic:</strong> Stick stâng în direcția verde ÎN ZBORUL mingii, fără sprint, fără butoane extra.</p>
+      <p><strong>Regula:</strong> Propria jumătate → zona verde. Treimea finală → risc calibrat justificat.</p>
+    </div></div>
+  </div>
+</div>
+
+<!-- ========== TACTICS ========== -->
+<div class="tab" id="t-tactics">
+  <div class="sec">
+    <div class="sec-h"><div class="sec-icon y">📐</div><h2 class="sec-t">Formația 4213 — 3 Variante</h2></div>
+    <p style="color:var(--t2);font-size:13px;margin-bottom:14px">Cea mai bună formație FC 26. Salvezi 3 variante, comuti cu stick dreapta în meci.</p>
+    <div class="card"><div class="card-t">🛡 DEF — Depth 45 <span class="badge bm">Conduci / Echilibrat</span></div><div class="card-b">
+      <p>Cod import: <span class="bi" style="font-size:10px">PAPA-ZULU-Romeo-PAPA-Whiskey-1-LIMA-$-ZULU-Bravo-DELTA-Echo</span></p>
+      <p>Fullbacks: <strong>Defend</strong> | CAM: Playmaker | CDM1: Box Crasher | CDM2: Deep Line Playmaker — Defend</p>
+    </div></div>
+    <div class="card"><div class="card-t">⚖️ BAL — Depth 55 <span class="badge bh">Cauți golul</span></div><div class="card-b">
+      <p>Cod import: <span class="bi" style="font-size:10px">Romeo-ZULU-Tango-Romeo-Yankee-3-JULIET-November-Bravo-Delta-VICTOR-Hotel</span></p>
+      <p>Fullbacks: <strong>Versatile</strong> | CAM: Playmaker | CDM1: Holding | CDM2: Deep Line Playmaker — Defend</p>
+    </div></div>
+    <div class="card"><div class="card-t">⚔️ ATT — Depth 60 <span class="badge bc">Trebuie gol neapărat</span></div><div class="card-b">
+      <p>Fullbacks: <strong>Versatile</strong> | CAM: Shadow Striker | CDM1: Box Crasher | CDM2: Deep Line Playmaker — Defend</p>
+      <p>⚠️ MAX depth 60 — la 61+ activezi presarea automată!</p>
+    </div></div>
+  </div>
+  <div class="sec">
+    <div class="sec-h"><div class="sec-icon b">🎛</div><h2 class="sec-t">Setări Controller (Rezumat)</h2></div>
+    <table class="ct"><thead><tr><th>Setare</th><th>Valoare</th></tr></thead><tbody>
+      <tr><td>Defending Style</td><td class="cm">Tactical</td></tr>
+      <tr><td>Auto Switching</td><td class="cm">Air Balls & Loose Balls</td></tr>
+      <tr><td>Pass Aiming Timing</td><td class="cm">Late</td></tr>
+      <tr><td>Ground Pass</td><td class="cm">Assisted</td></tr>
+      <tr><td>Through Pass</td><td class="cm">Semi</td></tr>
+      <tr><td>Cross</td><td class="cm">Assisted / Semi</td></tr>
+      <tr><td>Clearance</td><td class="cm">Directional</td></tr>
+      <tr><td>R-Stick Switching</td><td class="cm">Ball Relative, sens. 5</td></tr>
+      <tr><td>Analog Sprint</td><td class="cm">OFF</td></tr>
+      <tr><td>Pass Block</td><td class="cm">ON</td></tr>
+      <tr><td>Auto Switch Move</td><td class="cm">None</td></tr>
+      <tr><td>Crossplay</td><td class="cm">OFF</td></tr>
+    </tbody></table>
+  </div>
+  <div class="sec">
+    <div class="sec-h"><div class="sec-icon g">🏋️</div><h2 class="sec-t">Statistici Minime CB</h2></div>
+    <table class="ct"><thead><tr><th>Stat</th><th>Minim</th><th>Ideal</th></tr></thead><tbody>
+      <tr><td>Sprint Speed</td><td class="cm">85</td><td class="cm">87+</td></tr>
+      <tr><td>Def. Awareness</td><td class="cm">85</td><td class="cm">90+</td></tr>
+      <tr><td>Stand Tackling</td><td class="cm">80</td><td class="cm">85+</td></tr>
+      <tr><td>Înălțime</td><td class="cm">180cm+</td><td>—</td></tr>
+      <tr><td>Playstyle</td><td class="cm" style="color:var(--acc)">Jockey (obligatoriu)</td><td>—</td></tr>
+    </tbody></table>
+  </div>
+</div>
+
+<!-- ========== DRILLS ========== -->
+<div class="tab" id="t-drills">
+  <div class="sec">
+    <div class="sec-h"><div class="sec-icon g">⏱</div><h2 class="sec-t">Rutina Zilnică (~35 min)</h2></div>
+    <div class="dr dg"><div class="dr-n">1. Training Center — Jockey Drill</div><div class="dr-d">L2+R2 running jockey. Deviezi adversarul spre exterior. Ignoră tackle.</div><div class="dr-t"><div class="tm" id="tm-0">10:00</div><button class="tb" onclick="timer(0,600)">Start</button></div></div>
+    <div class="dr do"><div class="dr-n">2. Practice Arena — Right Stick Switching</div><div class="dr-d">Adaugă adversari (△). Selecție manuală cu R-Stick. Fără L1.</div><div class="dr-t"><div class="tm" id="tm-1">05:00</div><button class="tb" onclick="timer(1,300)">Start</button></div></div>
+    <div class="dr db"><div class="dr-n">3. Practice Arena — Low Driven Shooting</div><div class="dr-d">Pattern: atingere 45° → double tap putere medie. Testează near + cross goal.</div><div class="dr-t"><div class="tm" id="tm-2">05:00</div><button class="tb" onclick="timer(2,300)">Start</button></div></div>
+    <div class="dr dg"><div class="dr-n">4. Rush Mode — Apărare ca CB</div><div class="dr-d">Rush → Competitive → selectezi CB. Aperi 100%. Camera: Tactical.</div><div class="dr-t"><div class="tm" id="tm-3">15:00</div><button class="tb" onclick="timer(3,900)">Start</button></div></div>
+  </div>
+</div>
+
+<!-- ========== QUIZ ========== -->
+<div class="tab" id="t-quiz">
+  <div class="sec">
+    <div class="sec-h"><div class="sec-icon y">🧠</div><h2 class="sec-t">Quiz-uri de Cunoștințe</h2></div>
+    <p style="color:var(--t2);font-size:13px;margin-bottom:14px">Testează-ți cunoștințele din curs. Alege o categorie:</p>
+    <div id="quiz-cats"></div>
+    <div id="quiz-area" style="margin-top:16px"></div>
+  </div>
+</div>
+
+<!-- ========== MISTAKES ========== -->
+<div class="tab" id="t-mistakes">
+  <div class="sec">
+    <div class="sec-h"><div class="sec-icon r">📉</div><h2 class="sec-t">Tracker Greșeli Post-Meci</h2></div>
+    <p style="color:var(--t2);font-size:13px;margin-bottom:14px">Apasă pe greșelile făcute după fiecare meci pierdut.</p>
+    <div class="lg" id="m-grid"></div>
+    <div class="card"><div class="card-t">🔍 Analiză Pattern-uri</div><div class="card-b" id="m-analysis">Apasă pe greșeli. Analiza va apărea aici.</div></div>
+    <button class="rst" onclick="resetM()">Resetează contoarele</button>
+  </div>
+</div>
+
+<!-- ========== REPLAY ========== -->
+<div class="tab" id="t-replay">
+  <div class="sec">
+    <div class="sec-h"><div class="sec-icon b">🎬</div><h2 class="sec-t">Protocol Analiză Replay</h2></div>
+    <p style="color:var(--t2);font-size:13px;margin-bottom:14px">La fiecare gol primit, derulează 30 de secunde ÎNAINTE și răspunde:</p>
+    <div class="card"><div class="card-t">📹 Cum înregistrezi</div><div class="card-b"><p>PS: <span class="bi">Share → □</span> = 30 sec. <span class="bi">Share → Save</span> = 30 min.</p><p>PC: Nvidia Shadowplay / OBS. Activează <span class="bi">Input Overlay: ON</span></p></div></div>
+  </div>
+  <div class="sec" id="replay-qs"></div>
+</div>
+
+</div><!-- main -->
+</div><!-- app -->
+
+<script>
+// ============================= DATA =============================
+const CHECKS=[
+  // SETUP
+  {g:"⚙️ Setup & Setări",t:"Cablu ethernet / Powerline adapter conectat",d:"Elimină speed-up lag-ul Wi-Fi"},
+  {g:"⚙️ Setup & Setări",t:"Defending Style: Tactical",d:"99% din jucători + pro-uri"},
+  {g:"⚙️ Setup & Setări",t:"Auto Switching: Air Balls & Loose Balls",d:"Automatic schimbă la momente nepotrivite"},
+  {g:"⚙️ Setup & Setări",t:"R-Stick Switching: Ball Relative, sens. 5",d:"Cel mai consistent defensiv"},
+  {g:"⚙️ Setup & Setări",t:"Analog Sprint OFF, Pass Block ON",d:"Evită sprint accidental + intercepții automate"},
+  {g:"⚙️ Setup & Setări",t:"Camera Co-op, Height 20, Zoom 0, High Contrast ON",d:"Vizibilitate maximă"},
+  {g:"⚙️ Setup & Setări",t:"CB-uri cu Jockey playstyle + Sprint 85+ / Def. Awareness 85+",d:"Shadow sau Sentinel"},
+  // JOCKEY
+  {g:"🏃 Jockey & Tackle",t:"Stăpânesc L2 — blocaj unghi static",d:"Față în față, distanța unui jucător"},
+  {g:"🏃 Jockey & Tackle",t:"Stăpânesc L2+R2 — running jockey, împing spre exterior",d:"Principala metodă defensivă"},
+  {g:"🏃 Jockey & Tackle",t:"Diferența R2 (sprint recuperare) vs L2+R2 (apărare activă)",d:"R2 = viteză. L2+R2 = control defensiv"},
+  {g:"🏃 Jockey & Tackle",t:"Super Cancel (toți analogii) când jocul mă trage",d:"Anulează animația forțată"},
+  {g:"🏃 Jockey & Tackle",t:"Nu mă arunc la tackle decât cu mingea în față",d:"Auto-tackle funcționează"},
+  // CDM
+  {g:"🛡 CDM & Switching",t:"Aper primar cu CDM, nu cu CB",d:"CDM1 → CDM2 → CB"},
+  {g:"🛡 CDM & Switching",t:"Right stick switch ca metodă principală",d:"L1 selectează greșit prea des"},
+  {g:"🛡 CDM & Switching",t:"Schimb la animația de lovire, nu după sosire",d:"Câștig 1-2 secunde"},
+  {g:"🛡 CDM & Switching",t:"Teammate contain DOAR cu CAM/CDM, NICIODATĂ CB",d:"Cu CB = gol garantat"},
+  {g:"🛡 CDM & Switching",t:"CDM marchează zone, nu jucători",d:"Pasivitate > agresivitate"},
+  // LINIA DE 4
+  {g:"🏰 Linia de 4 & Depth",t:"Nu ies agresiv cu CB",d:"Adversarul va trece mingea"},
+  {g:"🏰 Linia de 4 & Depth",t:"Linia de 4 rămâne în linie, nu o rup",d:"Irecuperabil în FC 26"},
+  {g:"🏰 Linia de 4 & Depth",t:"Nu pierd mingea cu CB (portar = al 5-lea jucător)",d:"Pasă sigură sau back la GK"},
+  {g:"🏰 Linia de 4 & Depth",t:"Fullback nu iese să preseze winger-ul adversar",d:"Rupe linia de 4"},
+  {g:"🏰 Linia de 4 & Depth",t:"Comut DEF/BAL/ATT corect în funcție de scor",d:"45/55/60 depth"},
+  // ATAC
+  {g:"⚔️ Dribbling & Finalizare",t:"Metoda 'pensulă' — dribbling fluid cu stick stâng",d:"Rotire continuă, fără ridicat degetul"},
+  {g:"⚔️ Dribbling & Finalizare",t:"Stutter (stânga-dreapta) pentru a crea unghiuri de pasă",d:"Ezitare care înșeală adversarul"},
+  {g:"⚔️ Dribbling & Finalizare",t:"Low Driven (double tap, putere medie) = finalizare principală",d:"CEA MAI EFICIENTĂ metodă din FC 26"},
+  {g:"⚔️ Dribbling & Finalizare",t:"Unghi de 45° înainte de șut (nu frontal)",d:"Cross goal și near post, ambele viabile"},
+  {g:"⚔️ Dribbling & Finalizare",t:"Finesse NUMAI în interiorul careului, cu unghi",d:"Nu funcționează din afara careului"},
+  {g:"⚔️ Dribbling & Finalizare",t:"Skill moves cu stick DREPT, relative la direcția jucătorului",d:"Nu față de ecran/poartă — față de JUCĂTOR"},
+  // ELITE
+  {g:"💎 Elite",t:"Tracking back — alerg unde VA FI mingea",d:"Anticipare > reacție"},
+  {g:"💎 Elite",t:"Gap filling — mut manual jucătorul în spațiul gol",d:"R-Stick switch pe winger → mut înapoi"},
+  {g:"💎 Elite",t:"Prima atingere în zona verde (pie chart)",d:"Stick stâng în zborul mingii, fără sprint"},
+  {g:"💎 Elite",t:"Blochez cutback-ul ca prioritate în careu",d:"Zona cea mai periculoasă"},
+  {g:"💎 Elite",t:"Analizez 30 sec înainte de fiecare gol primit",d:"Protocol 7 întrebări"},
+];
+
+const MISTAKES=[
+  {l:"Ieșit cu CB-ul",tip:"CB rămâne pe linie. Aperi cu CDM. Dacă CDM depășit → selectezi CB dar NU ieși."},
+  {l:"Teammate contain cu CB",tip:"R1 DOAR cu CAM/CDM. Cu CB = iese automat din poziție → gol."},
+  {l:"Switching prea târziu",tip:"Schimbă la ANIMAȚIA de lovire (când apasă pasă), nu după sosire. Right stick."},
+  {l:"Pierdut minge cu CB",tip:"CB: pasă sigură sau la portar. Nicio fentă, nicio driblă."},
+  {l:"Rupt linia de 4",tip:"Sacră. Nu scoate fullback, nu ieși cu CB. Irecuperabil."},
+  {l:"Fullback avansat",tip:"Fullback rămâne în linie. Presare winger = cu CDM/midfielder. Fullbacks pe Defend."},
+  {l:"CDM prea agresiv",tip:"CDM marchează zone, nu atacă mingea. Pasiv — lasă adversarul să greșească."},
+  {l:"Jucat frustrat",tip:"Pauza 10 min după înfrângere. Regula 7-7-7. Muzică BPM scăzut. Oprește comentariul."},
+];
+
+const REPLAY_QS=[
+  {n:1,c:"r",q:"Am ieșit cu fundașul central?",a:"Dacă da → asta a creat golul. CB pe linie, fără excepții."},
+  {n:2,c:"r",q:"Am schimbat jucătorul prea târziu?",a:"Schimbarea = la animația de lovire. Așteptarea sosirii = 1-2 sec pierdute."},
+  {n:3,c:"r",q:"Am folosit teammate contain cu CB?",a:"Doar CAM/CDM. Cu CB = jucătorul iese automat."},
+  {n:4,c:"y",q:"Am alergat unde era mingea sau unde VA FI?",a:"Tracking back = spre destinație, nu sursă."},
+  {n:5,c:"y",q:"Am fost depășit central sau pe margine?",a:"Central → running jockey eșuat. Margine → cutback-ul trebuia blocat."},
+  {n:6,c:"b",q:"Am acoperit golul din formație (gap filling)?",a:"CDM ieșit → R-Stick pe winger → mut manual ÎNAINTE de pasă."},
+  {n:7,c:"b",q:"Prima atingere a fost în zona verde?",a:"Fiecare gol începe cu pierdere de minge. Verifică zona pie chart."},
+];
+
+const QUIZZES={
+  "🛡 Apărare":[
+    {q:"Care e principala metodă defensivă în FC 26?",o:["X (tackle)","L2+R2 (running jockey)","R1 (teammate contain)","R2 (sprint)"],c:1,e:"Running jockey (L2+R2) este principala metodă. Scopul e să împingi adversarul spre exterior, nu să câștigi mingea."},
+    {q:"Cu cine poți folosi teammate contain (R1)?",o:["Cu oricine","Cu CB și CDM","DOAR cu CAM/CDM","Cu fullback-urile"],c:2,e:"Teammate contain DOAR cu CAM sau CDM secundar. NICIODATĂ cu CB — jucătorul iese automat din poziție."},
+    {q:"Când schimbi jucătorul defensiv?",o:["După ce mingea ajunge la adversar","La animația de lovire a mingii","Când adversarul face skill move","Nu schimbi — stai pe CDM"],c:1,e:"La animația de lovire (când adversarul apasă pasă), nu după sosirea mingii. Câștigi 1-2 secunde critice."},
+    {q:"Care e ierarhia defensivă corectă?",o:["CB → CDM → Fullback","Fullback → CDM → CB","CDM1 → CDM2 → Linia de 4 (CB)","Orice jucător disponibil"],c:2,e:"CDM principal → CDM secundar → linia de 4 (CB ca ultimă resursă). Nu ieși cu CB decât fără altă opțiune."},
+    {q:"Ce faci când ești sub presiune fără pasă sigură?",o:["Driblă cu CB-ul","Degajare lungă","Dă la portar (al 5-lea jucător)","Sprint spre margine"],c:2,e:"Portarul = al 5-lea jucător. Creezi avantaj numeric 4+1 vs 4."},
+    {q:"Ce distanță menții față de adversar în jockey?",o:["Cât mai aproape","Cât mai departe","Distanța unui jucător între voi","Nu contează distanța"],c:2,e:"Imaginează-ți un jucător între voi. Prea aproape = depășire prin skill move. Prea departe = poate șuta."},
+    {q:"Super Cancel se activează cu:",o:["L1 + R1","Toți analogii simultan","L2 + L1","Double tap X"],c:1,e:"Super Cancel = toți analogii apăsați simultan. Anulează animația forțată de joc."},
+    {q:"Ce faci când CDM-ul iese din poziție și se creează gol?",o:["Aștepți să revină automat","Right stick switch pe winger și-l muți manual","L1 și speri","Teammate contain cu CB"],c:1,e:"Gap filling: R-Stick switch pe winger/mijlocaș → îl muți manual în spațiul gol ÎNAINTE de pasa adversarului."},
+  ],
+  "⚔️ Atac":[
+    {q:"Care e metoda principală de finalizare în FC 26?",o:["Finesse (R1+Shoot)","Low Driven Double Tap","Power Shot (L1+R1+Shoot)","Chip Shot"],c:1,e:"Low Driven (double tap shoot la putere medie). CEA MAI EFICIENTĂ metodă din FC 26."},
+    {q:"La ce unghi trebuie să fii față de poartă înainte de șut?",o:["Frontal (0°)","45°","90° (lateral)","Nu contează"],c:1,e:"Unghi de 45° față de linia porții. Nu trage frontal direct. O atingere la 45°, apoi șut transversal."},
+    {q:"Finesse shot (R1+Shoot) funcționează:",o:["Din orice poziție","NUMAI în interiorul careului cu unghi","Numai din afara careului","Numai pe postul depărtat"],c:1,e:"Finesse funcționează ÎNĂUNTRUL careului când ai unghi. Din AFARA careului — nu funcționează în FC 26."},
+    {q:"Skill move-urile sunt relative la:",o:["Direcția ecranului","Direcția porții adverse","Direcția JUCĂTORULUI (ora 12 = direcția de mers)","Poziția pe teren"],c:2,e:"Toate skill moves sunt relative la direcția jucătorului. Direcția de mers = mereu 'ora 12'."},
+    {q:"Metoda de dribbling recomandată e:",o:["Flick rapid","Metoda 'Pensulă' (rotire continuă a stick-ului)","Sprint + schimbare bruscă","Auto dribbling (fără stick)"],c:1,e:"Metoda pensulă: stick stâng rotit ca o pensulă pe tablou, fără să ridici degetul. Mișcare continuă, fluidă."},
+    {q:"Prima atingere corectă e în:",o:["Direcția porții adverse","Zona verde (opusul adversarului)","Orice direcție cu sprint","Lateral întotdeauna"],c:1,e:"Zona verde = opusul adversarului. Stick stâng în direcția sigură ÎN ZBORUL mingii, fără sprint."},
+    {q:"Power Shot (L1+R1+Shoot) necesită:",o:["Timing perfect","Direcționare manuală cu stick stâng","Jucător cu 90+ Shot Power","Finesse playstyle"],c:1,e:"Power Shot TREBUIE direcționat manual cu stick-ul stâng — altfel mingea merge oriunde."},
+    {q:"Shielding (protecția mingii) se face cu:",o:["R1 lângă adversar","L2 lângă adversar","R2 lângă adversar","Nu există în FC 26"],c:1,e:"L2 lângă adversar — corpul jucătorului se întoarce automat pentru a proteja mingea."},
+  ],
+  "📐 Tactici":[
+    {q:"Care e formația recomandată în FC 26?",o:["4231","4321","4213","442"],c:2,e:"4213 este cea mai bună formație din FC 26, cu 3 variante: DEF, BAL, ATT."},
+    {q:"Ce depth folosești în varianta defensivă?",o:["30","45","55","60"],c:1,e:"DEF = depth 45. BAL = 55. ATT = 60. Niciodată peste 60 (activezi presarea automată)."},
+    {q:"De ce depth 61+ e periculos?",o:["Jucătorii obosesc","Activează presarea automată forțată","Portarul iese prea mult","Nu există diferență"],c:1,e:"La depth 61+ se activează presarea automată forțată — tracking mai slab, vulnerabil la pase în spatele liniei."},
+    {q:"Ce rol au fullback-urile în varianta defensivă?",o:["Versatile","Balance","Defend","Wing Back"],c:2,e:"Fullbacks pe Defend în varianta DEF. Versatile în BAL și ATT."},
+    {q:"CAM-ul pe ce rol e setat în varianta echilibrată?",o:["Shadow Striker","Roaming","Playmaker","Half Winger"],c:2,e:"Playmaker (nu Roaming) în DEF și BAL. Shadow Striker doar în ATT."},
+    {q:"Când comuti pe varianta ATT (depth 60)?",o:["Când conduci confortabil","Când trebuie neapărat un gol","Întotdeauna în prima repriză","Niciodată — e prea riscant"],c:1,e:"ATT = depth 60, doar când trebuie neapărat gol. Conduci → DEF. Cauți golul → BAL."},
+    {q:"Defending Style recomandat:",o:["Advanced","Tactical","Legacy","Nu contează"],c:1,e:"Tactical. 99% din jucători + pro-uri. Advanced = doar jucători Elite+."},
+    {q:"Pass Aiming Timing recomandat:",o:["Early","Normal","Late","Nu schimba default-ul"],c:2,e:"Late. Cu Early ești blocat; cu Late poți redirecționa pasa chiar înainte de contact."},
+  ],
+};
+
+// ======================== AUTH ========================
+let currentUser=null;
+function getUsers(){try{return JSON.parse(localStorage.getItem('fc26_users'))||{}}catch(e){return{}}}
+function saveUsers(u){localStorage.setItem('fc26_users',JSON.stringify(u))}
+let authMode='register';
+
+function showLoginScreen(){
+  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('app').style.display='none';
+  const users=getUsers();
+  const keys=Object.keys(users);
+  const el=document.getElementById('l-users');
+  if(keys.length){
+    authMode='login';
+    updateAuthUI();
+    el.innerHTML='<div class="login-users-title">Conturi existente</div>'+keys.map(k=>{
+      const d=new Date(users[k].lastLogin||Date.now()).toLocaleDateString('ro-RO');
+      return `<button class="login-user-btn" onclick="quickLogin('${k}')">${k} <span class="u-date">${d}</span></button>`;
+    }).join('');
+  } else {
+    el.innerHTML='';
+    authMode='register';
+    updateAuthUI();
+  }
+}
+
+function updateAuthUI(){
+  document.getElementById('l-btn').textContent=authMode==='register'?'Creează cont':'Loghează-te';
+  document.getElementById('l-toggle').innerHTML=authMode==='register'?'Ai deja cont? <span>Loghează-te</span>':'Nu ai cont? <span>Creează unul</span>';
+}
+function toggleAuthMode(){authMode=authMode==='register'?'login':'register';updateAuthUI();document.getElementById('l-err').textContent=''}
+function quickLogin(name){document.getElementById('l-user').value=name;document.getElementById('l-pass').focus()}
+
+function doAuth(){
+  const u=document.getElementById('l-user').value.trim();
+  const p=document.getElementById('l-pass').value;
+  const err=document.getElementById('l-err');
+  if(!u||!p){err.textContent='Completează ambele câmpuri.';return}
+  if(u.length<2){err.textContent='Username: minim 2 caractere.';return}
+  if(p.length<3){err.textContent='Parola: minim 3 caractere.';return}
+  const users=getUsers();
+  if(authMode==='register'){
+    if(users[u]){err.textContent='Username-ul există deja. Loghează-te.';return}
+    users[u]={pass:btoa(p),created:Date.now(),lastLogin:Date.now(),data:{checks:{},mistakes:[0,0,0,0,0,0,0,0],quizScores:{}}};
+    saveUsers(users);
+    loginAs(u,users);
+  } else {
+    if(!users[u]){err.textContent='Username-ul nu există.';return}
+    if(atob(users[u].pass)!==p){err.textContent='Parolă incorectă.';return}
+    users[u].lastLogin=Date.now();
+    saveUsers(users);
+    loginAs(u,users);
+  }
+}
+
+function loginAs(u,users){
+  currentUser=u;
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('app').style.display='';
+  document.getElementById('nav-user').textContent='⏏ '+u;
+  loadUserData();
+  buildAll();
+}
+
+function logout(){currentUser=null;showLoginScreen()}
+function getUserData(){const u=getUsers();return u[currentUser]?.data||{checks:{},mistakes:[0,0,0,0,0,0,0,0],quizScores:{}}}
+function saveUserData(d){const u=getUsers();if(u[currentUser]){u[currentUser].data=d;saveUsers(u)}}
+let D;
+function loadUserData(){D=getUserData();if(!D.checks)D.checks={};if(!D.mistakes)D.mistakes=[0,0,0,0,0,0,0,0];if(!D.quizScores)D.quizScores={}}
+
+// ======================== TABS ========================
+document.querySelectorAll('.nb').forEach(b=>{b.addEventListener('click',()=>showTab(b.dataset.tab))});
+function showTab(id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  const t=document.getElementById('t-'+id);if(t)t.classList.add('active');
+  document.querySelectorAll('.nb').forEach(b=>{if(b.dataset.tab===id)b.classList.add('active')});
+  window.scrollTo({top:0});
+}
+
+// ======================== CHECKLIST ========================
+function buildChecklist(){
+  const c=document.getElementById('cl-container');
+  let html='',cg='';
+  CHECKS.forEach((item,i)=>{
+    if(item.g!==cg){cg=item.g;html+=`<h3 style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;margin:20px 0 10px;color:var(--t2)">${cg}</h3>`}
+    const done=D.checks[i];
+    html+=`<div class="cl${done?' done':''}" onclick="tglC(${i},this)"><div class="cb">${done?'✓':''}</div><div><div class="cl-t">${item.t}</div><div class="cl-d">${item.d}</div></div></div>`;
+  });
+  c.innerHTML=html;
+  updProg();
+}
+function tglC(i,el){D.checks[i]=!D.checks[i];el.classList.toggle('done');el.querySelector('.cb').textContent=D.checks[i]?'✓':'';saveUserData(D);updProg()}
+function updProg(){
+  const done=Object.values(D.checks).filter(Boolean).length,total=CHECKS.length,pct=Math.round(done/total*100);
+  document.getElementById('s-done').textContent=done;
+  document.getElementById('s-total').textContent=total;
+  document.getElementById('s-pct').textContent=pct+'%';
+  const pp=document.getElementById('p-pct'),pf=document.getElementById('p-fill');
+  if(pp)pp.textContent=pct+'%';if(pf)pf.style.width=pct+'%';
+}
+
+// ======================== TIMERS ========================
+const TM={};
+function timer(id,sec){
+  const btn=document.querySelectorAll('.tb')[id],disp=document.getElementById('tm-'+id);
+  if(TM[id]){clearInterval(TM[id].iv);delete TM[id];btn.textContent='Start';btn.classList.remove('stop');disp.textContent=fmt(sec);return}
+  let r=sec;disp.textContent=fmt(r);btn.textContent='Stop';btn.classList.add('stop');
+  TM[id]={iv:setInterval(()=>{r--;disp.textContent=fmt(r);if(r<=0){clearInterval(TM[id].iv);delete TM[id];btn.textContent='Start';btn.classList.remove('stop');disp.textContent='✓ GATA';setTimeout(()=>disp.textContent=fmt(sec),3000)}},1000)};
+}
+function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+
+// ======================== QUIZ ========================
+let activeQuiz=null,qIdx=0,qScore=0,qAnswered=[];
+function buildQuizCats(){
+  const el=document.getElementById('quiz-cats');
+  el.innerHTML=Object.keys(QUIZZES).map(k=>{
+    const best=D.quizScores[k];
+    const extra=best!==undefined?` — Best: ${best}/${QUIZZES[k].length}`:'';
+    return `<button class="quiz-cat-btn" onclick="startQuiz('${k}')">${k}${extra}</button>`;
+  }).join('');
+}
+function startQuiz(cat){
+  activeQuiz=cat;qIdx=0;qScore=0;qAnswered=[];
+  document.querySelectorAll('.quiz-cat-btn').forEach(b=>b.classList.toggle('active',b.textContent.startsWith(cat)));
+  renderQ();
+}
+function renderQ(){
+  const area=document.getElementById('quiz-area');
+  if(!activeQuiz){area.innerHTML='';return}
+  const qs=QUIZZES[activeQuiz];
+  if(qIdx>=qs.length){
+    const pct=Math.round(qScore/qs.length*100);
+    if(!D.quizScores[activeQuiz]||qScore>D.quizScores[activeQuiz]){D.quizScores[activeQuiz]=qScore;saveUserData(D);buildQuizCats()}
+    const best=D.quizScores[activeQuiz]||qScore;
+    document.getElementById('s-quiz').textContent=pct+'%';
+    area.innerHTML=`<div class="quiz-score"><div class="quiz-score-val">${qScore}/${qs.length}</div><div class="quiz-score-label">${pct}% — ${pct>=80?'Excelent! 🎯':pct>=50?'Bine, dar repetă! 📖':'Trebuie să repeți lecțiile 📚'}</div><div style="color:var(--t3);font-size:12px;margin-top:8px">Record: ${best}/${qs.length}</div><button class="quiz-restart" onclick="startQuiz('${activeQuiz}')">Reia quiz-ul</button></div>`;
+    return;
+  }
+  const q=qs[qIdx];
+  area.innerHTML=`<div class="quiz-card"><div class="quiz-q"><span class="q-num">${qIdx+1}/${qs.length}</span>${q.q}</div><div class="quiz-opts">${q.o.map((o,i)=>`<div class="quiz-opt" onclick="answerQ(${i})" id="qo-${i}">${o}</div>`).join('')}</div><div class="quiz-exp" id="q-exp">${q.e}</div></div>`;
+}
+function answerQ(i){
+  if(qAnswered.includes(qIdx))return;
+  qAnswered.push(qIdx);
+  const q=QUIZZES[activeQuiz][qIdx];
+  const opts=document.querySelectorAll('.quiz-opt');
+  opts.forEach((o,j)=>{o.classList.add('disabled');if(j===q.c)o.classList.add('correct');if(j===i&&i!==q.c)o.classList.add('wrong')});
+  if(i===q.c)qScore++;
+  document.getElementById('q-exp').style.display='block';
+  setTimeout(()=>{qIdx++;renderQ()},2200);
+}
+
+// ======================== MISTAKES ========================
+function buildMistakes(){
+  document.getElementById('m-grid').innerHTML=MISTAKES.map((m,i)=>`<div class="lc" onclick="logM(${i})"><div class="lv" id="mc-${i}">${D.mistakes[i]||0}</div><div class="ll">${m.l}</div></div>`).join('');
+  analyzeM();
+}
+function logM(i){D.mistakes[i]=(D.mistakes[i]||0)+1;document.getElementById('mc-'+i).textContent=D.mistakes[i];saveUserData(D);analyzeM()}
+function resetM(){D.mistakes=[0,0,0,0,0,0,0,0];saveUserData(D);buildMistakes()}
+function analyzeM(){
+  const total=D.mistakes.reduce((a,b)=>a+b,0),el=document.getElementById('m-analysis');
+  if(!total){el.innerHTML='Apasă pe greșeli după fiecare meci pierdut. Analiza va apărea aici.';return}
+  const max=Math.max(...D.mistakes),worst=D.mistakes.indexOf(max);
+  el.innerHTML=`<p><strong>Total greșeli: ${total}</strong></p><p style="margin-top:6px">🔴 <strong>Problema #1: ${MISTAKES[worst].l}</strong> (${max} / ${total} = ${Math.round(max/total*100)}%)</p><p style="margin-top:6px;color:var(--t2)">💡 ${MISTAKES[worst].tip}</p>`;
+}
+
+// ======================== REPLAY ========================
+function buildReplay(){
+  const el=document.getElementById('replay-qs');
+  const colors={r:'var(--red)',y:'var(--yel)',b:'var(--blu)'};
+  const bgs={r:'var(--redd)',y:'var(--yeld)',b:'var(--blud)'};
+  el.innerHTML=REPLAY_QS.map(q=>`<div class="cl" style="cursor:default"><div class="cb" style="background:${bgs[q.c]};border-color:${colors[q.c]};color:${colors[q.c]};font-size:11px">${q.n}</div><div><div class="cl-t">${q.q}</div><div class="cl-d">${q.a}</div></div></div>`).join('');
+}
+
+// ======================== INIT ========================
+function buildAll(){buildChecklist();buildQuizCats();buildMistakes();buildReplay()}
+
+// Password field enter key
+document.getElementById('l-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doAuth()});
+document.getElementById('l-user').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('l-pass').focus()});
+
+// Check for existing session
+const lastUser=Object.keys(getUsers())[0];
+showLoginScreen();
+
+// ======================== PWA MANIFEST ========================
+const manifest={name:"FC26 Training Hub",short_name:"FC26",start_url:".",display:"standalone",background_color:"#0a0c10",theme_color:"#0a0c10",icons:[{src:"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%230a0c10' width='100' height='100' rx='20'/><text y='68' x='50' text-anchor='middle' font-size='50'>⚽</text></svg>",sizes:"any",type:"image/svg+xml"}]};
+const blob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
+document.getElementById('manifest-link').href=URL.createObjectURL(blob);
+</script>
+</body>
+</html>
